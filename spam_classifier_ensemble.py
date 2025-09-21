@@ -339,15 +339,15 @@ def create_wordclouds(df):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
     
     # Spam word cloud
-    spam_wc = WordCloud(width=500, height=300, background_color='white', colormap='Reds').generate(spam_text)
+    spam_wc = WordCloud(width=500, height=300, background_color='white', colormap='OrRd').generate(spam_text)
     ax1.imshow(spam_wc, interpolation='bilinear')
-    ax1.set_title('Spam Messages Word Cloud', color='red')
+    ax1.set_title('Spam Messages Word Cloud', color='#FF4500')
     ax1.axis('off')
     
     # Ham word cloud
-    ham_wc = WordCloud(width=500, height=300, background_color='white', colormap='Greens').generate(ham_text)
+    ham_wc = WordCloud(width=500, height=300, background_color='white', colormap='BuGn').generate(ham_text)
     ax2.imshow(ham_wc, interpolation='bilinear')
-    ax2.set_title('Ham Messages Word Cloud', color='green')
+    ax2.set_title('Ham Messages Word Cloud', color='#228B22')
     ax2.axis('off')
     
     return fig
