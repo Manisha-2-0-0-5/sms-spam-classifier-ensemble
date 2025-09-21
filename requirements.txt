@@ -5,3 +5,6 @@ scikit-learn
 xgboost
 nltk
 plotly
+wordcloud
+matplotlib
+seaborn
