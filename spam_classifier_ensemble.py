@@ -49,13 +49,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced CSS styling
+# Enhanced CSS styling with fallback for gradient compatibility
 st.markdown("""
     <style>
     .main-header {
         font-size: 2.8rem;
         font-weight: bold;
-        background: linear-gradient(45deg, #4B0082, #9370DB);
+        /* Fallback color if gradient fails */
+        color: #4B0082;
+        /* Gradient with fallback */
+        background: -webkit-linear-gradient(45deg, #4B0082, #9370DB);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
@@ -71,6 +74,7 @@ st.markdown("""
         padding-bottom: 0.5rem;
     }
     .metric-card {
+        background: #f5f7fa; /* Fallback solid color */
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         padding: 15px;
         border-radius: 10px;
@@ -83,6 +87,7 @@ st.markdown("""
         transform: translateY(-5px);
     }
     .prediction-spam {
+        background: #ff4d4d; /* Fallback solid color */
         background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%);
         color: white;
         padding: 15px;
@@ -94,6 +99,7 @@ st.markdown("""
         margin: 15px 0;
     }
     .prediction-ham {
+        background: #4CAF50; /* Fallback solid color */
         background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
         color: white;
         padding: 15px;
@@ -105,6 +111,7 @@ st.markdown("""
         margin: 15px 0;
     }
     .stProgress > div > div > div > div {
+        background: #4B0082; /* Fallback solid color */
         background: linear-gradient(90deg, #4B0082 0%, #9370DB 100%);
     }
     .feature-box {
@@ -190,7 +197,6 @@ def load_dataset():
         except Exception as e:
             logging.error(f"Download failed: {str(e)}")
             st.error("Download failed. Using synthetic data instead.")
-            # Synthetic fallback
             texts = [
                 "Win $1000 now! Click www.example.com!",
                 "Urgent: Verify account at bank.com!",
@@ -223,7 +229,6 @@ def load_dataset():
     except Exception as e:
         logging.error(f"Failed to load dataset: {str(e)}")
         st.error("Could not load dataset. Using synthetic data instead.")
-        # Synthetic fallback
         texts = [
             "Win $1000 now! Click www.example.com!",
             "Urgent: Verify account at bank.com!",
@@ -334,15 +339,15 @@ def create_wordclouds(df):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
     
     # Spam word cloud
-    spam_wc = WordCloud(width=500, height=300, background_color='white').generate(spam_text)
+    spam_wc = WordCloud(width=500, height=300, background_color='white', colormap='Reds').generate(spam_text)
     ax1.imshow(spam_wc, interpolation='bilinear')
-    ax1.set_title('Spam Messages Word Cloud')
+    ax1.set_title('Spam Messages Word Cloud', color='red')
     ax1.axis('off')
     
     # Ham word cloud
-    ham_wc = WordCloud(width=500, height=300, background_color='white').generate(ham_text)
+    ham_wc = WordCloud(width=500, height=300, background_color='white', colormap='Greens').generate(ham_text)
     ax2.imshow(ham_wc, interpolation='bilinear')
-    ax2.set_title('Ham Messages Word Cloud')
+    ax2.set_title('Ham Messages Word Cloud', color='green')
     ax2.axis('off')
     
     return fig
