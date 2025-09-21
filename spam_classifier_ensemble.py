@@ -49,15 +49,13 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced CSS styling with fallback for gradient compatibility
+# Enhanced CSS styling with text color fixes
 st.markdown("""
     <style>
     .main-header {
         font-size: 2.8rem;
         font-weight: bold;
-        /* Fallback color if gradient fails */
-        color: #4B0082;
-        /* Gradient with fallback */
+        color: #4B0082; /* Fallback color */
         background: -webkit-linear-gradient(45deg, #4B0082, #9370DB);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -76,6 +74,7 @@ st.markdown("""
     .metric-card {
         background: #f5f7fa; /* Fallback solid color */
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: #333333; /* Dark text for readability */
         padding: 15px;
         border-radius: 10px;
         text-align: center;
@@ -89,7 +88,7 @@ st.markdown("""
     .prediction-spam {
         background: #ff4d4d; /* Fallback solid color */
         background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%);
-        color: white;
+        color: white; /* Explicitly set white text */
         padding: 15px;
         border-radius: 10px;
         text-align: center;
@@ -101,7 +100,7 @@ st.markdown("""
     .prediction-ham {
         background: #4CAF50; /* Fallback solid color */
         background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
-        color: white;
+        color: white; /* Explicitly set white text */
         padding: 15px;
         border-radius: 10px;
         text-align: center;
@@ -116,6 +115,7 @@ st.markdown("""
     }
     .feature-box {
         background-color: #f8f9fa;
+        color: #333333; /* Dark text for readability */
         padding: 15px;
         border-radius: 10px;
         border-left: 4px solid #4B0082;
@@ -123,7 +123,7 @@ st.markdown("""
     }
     .footer {
         text-align: center;
-        color: #666;
+        color: #666; /* Darker gray for footer text */
         padding: 20px;
         margin-top: 30px;
         border-top: 1px solid #ddd;
@@ -482,27 +482,23 @@ if model_loaded:
                     )
                     st.plotly_chart(fig, use_container_width=True)
                     
-                    # Show extracted features
+                    # Show extracted features using st.metric
                     st.markdown("### Message Features")
-                    col1, col2 = st.columns(2)
+                    col1, col2, col3 = st.columns(3)
                     
                     with col1:
-                        st.markdown(f"""
-                        <div class="feature-box">
-                            <strong>Length:</strong> {features['length']} characters<br>
-                            <strong>Contains URL:</strong> {'Yes' if features['has_url'] else 'No'}<br>
-                            <strong>Special Characters:</strong> {features['num_special_chars']}
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.metric("Length", f"{features['length']} chars")
+                        st.metric("Contains URL", 'Yes' if features['has_url'] else 'No')
                     
                     with col2:
-                        st.markdown(f"""
-                        <div class="feature-box">
-                            <strong>Digits:</strong> {features['num_digits']}<br>
-                            <strong>Uppercase Ratio:</strong> {features['uppercase_ratio']:.3f}<br>
-                            <strong>Processed Text:</strong> {processed_text[:50]}{'...' if len(processed_text) > 50 else ''}
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.metric("Special Chars", features['num_special_chars'])
+                        st.metric("Digits", features['num_digits'])
+                    
+                    with col3:
+                        st.metric("Uppercase Ratio", f"{features['uppercase_ratio']:.2f}")
+                    
+                    # Display processed text
+                    st.text_area("Processed Text", processed_text, disabled=True, height=100)
             else:
                 st.warning("Please enter a valid message.")
                 
@@ -524,38 +520,20 @@ if model_loaded:
         report_df = pd.DataFrame(metrics['classification_report']).transpose()
         st.dataframe(report_df.style.highlight_max(axis=0, color='#d4f1d4'))
         
-        # ROC Curve (simulated)
+        # Model Performance Metrics using st.metric
         st.markdown("### Model Performance Metrics")
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            st.markdown(f"""
-            <div class="metric-card">
-                <strong>Accuracy</strong><br>
-                {metrics['accuracy']*100:.2f}%
-            </div>
-            """, unsafe_allow_html=True)
+            st.metric("Accuracy", f"{metrics['accuracy']*100:.2f}%")
         
         with col2:
-            st.markdown(f"""
-            <div class="metric-card">
-                <strong>F1 Score</strong><br>
-                {metrics['f1_score']*100:.2f}%
-            </div>
-            """, unsafe_allow_html=True)
+            st.metric("F1 Score", f"{metrics['f1_score']*100:.2f}%")
         
         with col3:
-            # Calculate precision and recall from confusion matrix
             tn, fp, fn, tp = cm.ravel()
             precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-            recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-            
-            st.markdown(f"""
-            <div class="metric-card">
-                <strong>Precision</strong><br>
-                {precision*100:.2f}%
-            </div>
-            """, unsafe_allow_html=True)
+            st.metric("Precision", f"{precision*100:.2f}%")
         
     elif options == "Dataset Analysis":
         st.markdown("## Dataset Analysis")
